@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather</title>
+    <script type="text/javascript">
+        function sendData(){
+            var lat = document.getElementById('latitude').value;
+            var lon = document.getElementById('longitude').value;
+
+            var xhr = new XMLHttpRequest();
+            var url = "http://localhost:8080/REST/getWeather";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    var htmlCode = "";
+                    if (xhr.responseText.includes("error")) {
+                        htmlCode = json.errorMsg;
+                    } else {
+                        htmlCode = "<h3>Weather forecast</h3>Temperatur: " + json.temp +"&deg;C<br>Min. temperature: "+ json.minTemp +"&deg;C<br>Max. temperature: "+ json.maxTemp +"&deg;C<br>Weather description: " + json.weatherDescription +"<br>Time offset: " + json.timeOffset;
+                    }
+
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'someClass');
+                    div.innerHTML = htmlCode;
+                    document.getElementById('weather').innerHTML = "";
+                    document.getElementById('weather').appendChild(div);
+                }
+            };
+            var data = JSON.stringify({"lat": ""+lat+"", "lon": ""+lon+""});
+            xhr.send(data);
+        }
+    </script>
+</head>
+<body>
+<h1>Weather forecast</h1>
+<form name="locationForm" onSubmit="return sendData()">
+    Latitude:<br>
+    <input type="number" name="Latitude" value="40.34919457" id="latitude" step="0.00000001" >
+    <br>
+    Longitude:<br>
+    <input type="number" name="Longitude" value="3.91966653" id="longitude" step="0.00000001">
+    <br><br>
+    <input id="clickMe" type="button" value="Search" onclick="sendData();" />
+</form>
+<br>
+<div id="weather"></div>
+
+</body>
+</html>
